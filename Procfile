@@ -1,2 +1,1 @@
-web: gunicorn newproject.wsgi --timeout 120
-
+web: gunicorn myproject.wsgi:application
