@@ -1,0 +1,37 @@
+language: python
+python:
+  - "3.10"
+
+services:
+  - postgresql
+
+env:
+  global:
+    - DJANGO_SETTINGS_MODULE=djangoproject.settings
+    - DATABASE_URL=postgres://postgres@localhost/travis_ci_test
+
+install:
+  - pip install -r requirements.txt
+  - pip install black flake8 coverage coveralls
+
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+
+script:
+  - black --check .
+  - flake8 .
+  - coverage run manage.py test
+
+after_success:
+  - coveralls
+
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  region: "us-east-1"
+  app: "polls"
+  env: "mysite-env"
+  bucket_name: "elasticbeanstalk-us-east-1-403048695668"
+  on:
+    branch: main
