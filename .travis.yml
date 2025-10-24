@@ -7,7 +7,7 @@ services:
 
 env:
   global:
-    - DJANGO_SETTINGS_MODULE=newproject.settings
+    - DJANGO_SETTINGS_MODULE=djangoproject.settings
     - DATABASE_URL=postgres://postgres@localhost/travis_ci_test
 
 install:
@@ -15,23 +15,27 @@ install:
   - pip install black flake8 coverage coveralls
 
 before_script:
+  # Create test database
   - psql -c 'create database travis_ci_test;' -U postgres
 
 script:
+  # Check formatting and linting
   - black --check .
   - flake8 .
+  # Run Django tests with coverage
   - coverage run manage.py test
 
 after_success:
-  - coveralls
+  # Send coverage results to Coveralls
+  - COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN Coveralls 
 
 deploy:
   provider: elasticbeanstalk
   access_key_id: $AWS_ACCESS_KEY_ID
   secret_access_key: $AWS_SECRET_ACCESS_KEY
   region: "us-east-1"
-  app: "polls"
-  env: "mysite-env"
+  app: "polls"                      # Your Elastic Beanstalk application name
+  env: "mysite-env"                 # Your Elastic Beanstalk environment name
   bucket_name: "elasticbeanstalk-us-east-1-403048695668"
   on:
     branch: main
