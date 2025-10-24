@@ -24,8 +24,7 @@ script:
   - coverage report
 
 after_success:
-  - coveralls--verbose
-
+  - coveralls --verbose   # <-- Added space between 'coveralls' and '--verbose'
 
 deploy:
   provider: elasticbeanstalk
@@ -36,6 +35,4 @@ deploy:
   env: "mysite-env"
   bucket_name: "elasticbeanstalk-us-east-1-403048695668"
   on:
-    branch:
-    only:
-     main
+    branch: main          # <-- simplified; no need for “only:” section
